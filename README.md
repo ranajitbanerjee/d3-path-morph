@@ -1,4 +1,4 @@
-# d3-path-tweening
+# d3-path-morph
 Makes transition between two paths even if those have different number of points
 
 
