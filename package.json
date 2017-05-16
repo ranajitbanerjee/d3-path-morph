@@ -1,0 +1,25 @@
+{
+  "name": "d3-path-morph",
+  "version": "1.0.0",
+  "description": "Morphs paths even when both have different number of points",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ranajitbanerjee/d3-path-tweening.git"
+  },
+  "keywords": [
+    "d3-path-morph"
+  ],
+  "author": "Ranajit Banerjee",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ranajitbanerjee/d3-path-tweening/issues"
+  },
+  "homepage": "https://github.com/ranajitbanerjee/d3-path-tweening#readme",
+  "dependencies": {
+    "d3-interpolate": "^1.1.5"
+  }
+}
