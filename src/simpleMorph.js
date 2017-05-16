@@ -1,6 +1,11 @@
 
+import splitPaths from './path-separation';
+import {interpolateArray} from 'd3-interpolate';
+
 function getTotalLength (path) {
-    var i, len, totalDistance = 0, distance, sortedDistances = [];
+    var i, len, totalDistance = 0, distance, sortedDistances = [],
+        point1,
+        point2;
     for (i = 0, len = path.length; i < len - 1; i++) {
         point1 = path[i];
         point2 = path[i + 1];
@@ -55,7 +60,7 @@ function getClosestIndexOf (arr, value, side) {
 }
 
 function getPointAtLength (path, length, sortedDistances) {
-    var i, len, totalDistance = 0, distance, prevDist = 0, t;
+    var i, len, totalDistance = 0, distance, prevDist = 0, t, point1, point2, x, y;
     i = getClosestIndexOf(sortedDistances, length, 'left');
 
     point1 = path[i];
@@ -85,9 +90,11 @@ function getPointAtLength (path, length, sortedDistances) {
 function dist (x1, y1, x2, y2) {
     return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 }
+
 function r (max, min) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
+
 function convertToSubArray(path) {
     var i, len, command, pathArr = [], arr;
     for (i = 0, len = path.length; i < len; i += 3) {
@@ -108,44 +115,44 @@ function concatArr (d) {
     return pathArr;
 }
 
-function morphPath (path1, path2) {
-    var mPath, pathArr1 = [], pathArr2 = [];
-    var now = performance.now();
-    for (let i = 0, len = path1[0].length; i < len; i++) {
-        mPath = getMorphedPath(path1[0][i], path2[0][i], !i);
+function morphPath (path1, path2, callback) {
+    var mPath, pathArr1 = [], pathArr2 = [],
+        interpolator;
+
+    path1 = path1[0] instanceof Array ? path1 : [path1];
+    path2 = path2[0] instanceof Array ? path2 : [path2];
+
+    for (let i = 0, len = path1.length; i < len; i++) {
+        mPath = getMorphedPath(path1[i], path2[i]);
         pathArr1 = pathArr1.concat(mPath[0]);
         pathArr2 = pathArr2.concat(mPath[1]);
     }
-    console.log('morphPath ', performance.now() - now);
-    var now = performance.now();
-    var interpolator = d3.interpolateArray(pathArr1, pathArr2);
 
-    console.log('interpolator ', performance.now() - now);
+    interpolator = interpolateArray(pathArr1, pathArr2);
     return function (t) {
         if (t >=0 && t<=1) {
-            return interpolator(t).join(' ')
+            callback && callback(t);
+            return interpolator(t).join(' ');
         }
 
     }
 }
 
 
-function getMorphedPath (path1, path2, joinBase) {
+function getMorphedPath (path1, path2) {
     var path1Arr = convertToSubArray(path1),
     path2Arr = convertToSubArray(path2),
     paths,
     pathArr1 = [],
     pathArr2 = [],
+    i,
+    len,
     equalPaths;
 
-    var now = performance.now();
     splitter(path1Arr, path2Arr);
-    splitPaths(path1Arr, path2Arr, joinBase);
-    console.log('splitter ', performance.now() - now);
-    var now = performance.now();
+    splitPaths(path1Arr, path2Arr);
     paths = segmentPath(path1Arr, path2Arr);
-    console.log('segmentPath ', performance.now() - now);
-    var now = performance.now();
+
     for (i = 0, len = Math.max(paths[0].length, paths[1].length); i < len; i++) {
         path1 = paths[0][i];
         path2 = paths[1][i];
@@ -153,7 +160,6 @@ function getMorphedPath (path1, path2, joinBase) {
         pathArr1 = pathArr1.concat(equalPaths[0]);
         pathArr2 = pathArr2.concat(equalPaths[1]);
     }
-    console.log('loopMorph ', performance.now() - now);
     return [pathArr1, pathArr2];
 }
 
@@ -179,7 +185,9 @@ function appendM(p1, p2, point, i) {
 function segmentPath(p1, p2) {
     var i, len,
         path1Arr = [],
-        path2Arr = [];
+        path2Arr = [],
+        command,
+        arr = [];
 
     for (i = 0, len = p1.length; i < len; i++) {
         command = p1[i][0];
@@ -215,7 +223,10 @@ function equalizePath (p1, p2, precision) {
         p2Len,
         pointI,
         pointII,
-        count1 = count2 = 1;
+        count1 = 1,
+        count2 = 1,
+        M = 'M',
+        L = 'L';
 
     totalLength = getTotalLength(p1);
     sortedDistances1 = totalLength.sortedDistances;
@@ -271,20 +282,4 @@ function appendPoint(arr, point1, lastPoint) {
     }
 }
 
-// function checkCommonPaths (path1, path2) {
-//     let point1, point2,
-//         commonPoints1,
-//         commonPoints2;
-
-//     for (let i = 0, len = Math.max(path1.length, path2.length); i < len; i++); {
-//         point1 = path1[i];
-//         point2 = path2[i];
-//         if (point1.toString() == point2.toString()) {
-//             commonPoints1.push(point1);
-//             commonPoints2.push(point1);
-//         }
-//     }
-// }
-
-
-
+export default morphPath;
