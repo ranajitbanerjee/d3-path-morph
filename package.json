@@ -4,7 +4,8 @@
   "description": "Morphs paths even when both have different number of points",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "build": "webpack ./index.js ./build/index.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
   },
   "homepage": "https://github.com/ranajitbanerjee/d3-path-tweening#readme",
   "dependencies": {
-    "d3-interpolate": "^1.1.5"
+    "d3-interpolate": "^1.1.5",
+    "webpack": "^2.5.1"
   }
 }
