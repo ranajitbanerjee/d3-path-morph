@@ -272,7 +272,7 @@ function equalizePath (p1, p2, precision) {
         i ? path2Arr.push(L, p2[p2.length - 1][1], p2[p2.length - 1][2]) : path2Arr.push(M, pointII.x, pointII.y);
     }
 
-    console.log('getPointAtLength ', performance.now() - now);
+    // console.log('getPointAtLength ', performance.now() - now);
     return [path1Arr, path2Arr];
 }
 
